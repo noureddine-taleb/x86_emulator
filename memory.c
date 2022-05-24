@@ -1,7 +1,9 @@
-#include "common.h"
-#include "memory.h"
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
+#include "common.h"
+#include "memory.h"
+#include "cpu.h"
 
 static u8 memory[MEMORY_SIZE];
 

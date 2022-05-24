@@ -6,6 +6,7 @@
 #include "cpu.h"
 #include "init.h"
 #include "memory.h"
+#include "parser.h"
 
 int main(int argc, char **argv)
 {

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "instruction.h"
 #include "parser.h"
+#include "memory.h"
 
 union x86_instruction_flags chk[MAX_OPCODE];
 bool chsz_ad;

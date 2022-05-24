@@ -98,6 +98,8 @@ typedef void (*instruction_handler_t)(void);
 
 extern instruction_handler_t instructions[MAX_OPCODE];
 
+bool exec(void);
+
 void add_rm8_r8(void);
 void add_r8_rm8(void);
 void add_al_imm8(void);

@@ -23,4 +23,13 @@ extern union x86_instruction_flags chk[MAX_OPCODE];
 
 extern bool chsz_ad;
 
+void set_chsz_ad(bool ad);
+u8 parse_prefix(void);
+void parse(void);
+void parse_opcode(void);
+void parse_modrm_sib_disp(void);
+void parse_modrm32(void);
+void parse_modrm16(void);
+void parse_moffs(void);
+
 #endif // _PARSER_H

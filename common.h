@@ -15,7 +15,7 @@ typedef u8 bool;
 #define true 1
 #define false 0
 
-void die(char *fmt, ...) __attribute__((printf));
+void die(char *fmt, ...) __attribute__((__noreturn__)) __attribute__((format(printf, 1, 2)));
 
 #define _STRINGIFY(s) #s
 #define STRINGIFY(s) _STRINGIFY(s)
@@ -27,7 +27,8 @@ void die(char *fmt, ...) __attribute__((printf));
 			"(" __FILE__ ":" STRINGIFY(__LINE__) "):" #cond); \
 	}
 
-#define DEBUG(fmt, ...) printf("DEBUG:" fmt "\n", ##__VA_ARGS__)
+//#define DEBUG(fmt, ...) printf("DEBUG:" fmt "\n", ##__VA_ARGS__)
+#define DEBUG(fmt, ...)
 #define ERROR(fmt, ...) printf("ERROR:" fmt "\n", ##__VA_ARGS__)
 
 #endif // _COMMON_H
