@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "stdio.h": "c",
+    "fcntl.h": "c",
+    "stdlib.h": "c",
+    "common.h": "c",
+    "instruction.h": "c",
+    "cpu.h": "c",
+    "error.h": "c",
+    "cstring": "c",
+    "variant": "c"
+  }
+}
