@@ -51,6 +51,7 @@ void init_instructions(void)
 	set_instruction_handler(0x84, test_rm8_r8, CHK_MODRM);
 	set_instruction_handler(0x86, xchg_r8_rm8, CHK_MODRM);
 	set_instruction_handler(0x88, mov_rm8_r8, CHK_MODRM);
+	set_instruction_handler(0x89, mov_rm16_r16, CHK_MODRM);
 	set_instruction_handler(0x8a, mov_r8_rm8, CHK_MODRM);
 	set_instruction_handler(0x8e, mov_sreg_rm16, CHK_MODRM);
 	set_instruction_handler(0x90, nop, 0);

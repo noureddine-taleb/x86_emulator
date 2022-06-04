@@ -26,12 +26,6 @@
 #define EFLAGS_SF is_sign()
 #define EFLAGS_OF is_overflow()
 #define EFLAGS_DF is_direction()
-#define READ_MEM32(addr) get_data32(select_segment(), addr)
-#define READ_MEM16(addr) get_data16(select_segment(), addr)
-#define READ_MEM8(addr) get_data8(select_segment(), addr)
-#define WRITE_MEM32(addr, v) put_data32(select_segment(), addr, v)
-#define WRITE_MEM16(addr, v) put_data16(select_segment(), addr, v)
-#define WRITE_MEM8(addr, v) put_data8(select_segment(), addr, v)
 #define PUSH32(v) push32(v)
 #define PUSH16(v) push16(v)
 #define POP32() pop32()
@@ -49,6 +43,7 @@ enum reg32
 	EDI,
 	GPREGS_COUNT
 };
+
 enum reg16
 {
 	AX,
@@ -60,6 +55,7 @@ enum reg16
 	SI,
 	DI
 };
+
 enum reg8
 {
 	AL,
@@ -71,6 +67,7 @@ enum reg8
 	DH,
 	BH
 };
+
 enum sgreg
 {
 	ES,
@@ -81,6 +78,7 @@ enum sgreg
 	GS,
 	SGREGS_COUNT
 };
+
 enum dtreg
 {
 	GDTR,
@@ -117,14 +115,14 @@ struct sg_register_cache
 				u8 : 1;
 				u8 w : 1; // 0:r, 1:rw
 				u8 exd : 1;
-				u8 : 1;
+				u8 : 1; // = 0
 			} data;
 			struct
 			{
 				u8 : 1;
 				u8 r : 1; // 0:x, 1;xr
 				u8 cnf : 1;
-				u8 : 1;
+				u8 : 1; // = 1
 			} code;
 			struct
 			{

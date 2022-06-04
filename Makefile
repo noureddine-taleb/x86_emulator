@@ -18,6 +18,7 @@ run: $(TARGET) $(INPUT)
 
 $(INPUT): $(INPUT_SRC)
 	nasm -o $@ $^
+	# as --32 -o $@ $^
 	# objcopy -O binary $@
 	
 .PHONY: disas

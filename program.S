@@ -1,4 +1,4 @@
-;.globl _start
+; .globl _start
 _start:
 ;	mov %eax, %ebx
 ;	movb %al, %al
@@ -25,8 +25,14 @@ _start:
 ;	mov %ecx, %eax
 ;	iret
 
-mov eax, ebx
-mov edx, ecx
-mov al, bh
+;	mov %eax, %ebx
+;	mov %edx, %ecx
+;	mov %al, %bh
 
-iret
+;	iret
+
+	mov eax, ebx
+	mov edx, ecx
+	mov al, bh
+
+	iret

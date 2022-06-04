@@ -2,6 +2,7 @@
 #include "instruction.h"
 #include "parser.h"
 #include "memory.h"
+#include "cpu.h"
 
 union x86_instruction_flags chk[MAX_OPCODE];
 bool chsz_ad;
