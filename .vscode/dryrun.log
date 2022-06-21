@@ -1,0 +1,17 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/noureddine/storage/interesting/x86_emulator'
+cc -g -Werror   -c -o access.o access.c
+cc -g -Werror   -c -o common.o common.c
+cc -g -Werror   -c -o cpu.o cpu.c
+cc -g -Werror   -c -o exec.o exec.c
+cc -g -Werror   -c -o init.o init.c
+cc -g -Werror   -c -o instruction.o instruction.c
+cc -g -Werror   -c -o interrupt.o interrupt.c
+cc -g -Werror   -c -o io.o io.c
+cc -g -Werror   -c -o main.o main.c
+cc -g -Werror   -c -o memory.o memory.c
+cc -g -Werror   -c -o parser.o parser.c
+cc -g -Werror   -c -o pic.o pic.c
+cc -g -Werror -o x86 access.o common.o cpu.o exec.o init.o instruction.o interrupt.o io.o main.o memory.o parser.o pic.o
+make: Leaving directory '/home/noureddine/storage/interesting/x86_emulator'
+ 

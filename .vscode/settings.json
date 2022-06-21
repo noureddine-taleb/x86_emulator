@@ -8,6 +8,22 @@
     "cpu.h": "c",
     "error.h": "c",
     "cstring": "c",
-    "variant": "c"
+    "variant": "c",
+    "chrono": "c",
+    "memory.h": "c",
+    "cstddef": "c",
+    "string": "c",
+    "vector": "c",
+    "memory": "c",
+    "memory_resource": "c",
+    "type_traits": "c",
+    "cmath": "c",
+    "istream": "c",
+    "ostream": "c",
+    "sstream": "c",
+    "stdexcept": "c",
+    "utility": "c",
+    "hash_map": "c",
+    "algorithm": "c"
   }
 }

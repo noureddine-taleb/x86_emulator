@@ -1,6 +1,7 @@
 #include "init.h"
 #include "instruction.h"
 #include "parser.h"
+#include "exec.h"
 
 void set_instruction_handler(u16 opcode, instruction_handler_t func, u8 flags)
 {

@@ -11,15 +11,29 @@ u8 get_r8(void)
 	return get_gpreg8(REG);
 }
 
-u64 calc_modrm(void)
+u32 calc_sib(void)
 {
-	ASSERT(MOD != 3);
+	u32 base;
 
-	SEGMENT = DS;
-	if (is_mode32() ^ chsz_ad)
-		return calc_modrm32();
+	if (BASE == 5 && MOD == 0)
+		base = DISP32;
+	else if (BASE == 4)
+	{
+		if (SCALE == 0)
+		{ // BASE == 4, INDEX ==4, SCALE == 0 : [esp]
+			SEGMENT = SS;
+			base = 0;
+		}
+		else
+			ERROR("not implemented SIB (base = %d, index = %d, scale = %d)\n", BASE, INDEX, SCALE);
+	}
 	else
-		return calc_modrm16();
+	{
+		SEGMENT = (RM == 5) ? SS : DS;
+		base = get_gpreg32(BASE);
+	}
+
+	return base + get_gpreg32(INDEX) * (1 << SCALE);
 }
 
 u64 calc_modrm16(void)
@@ -41,7 +55,7 @@ u64 calc_modrm16(void)
 	case 0:
 	case 1:
 	case 7:
-		addr += GET_GPREG(BX);
+		addr += get_gpreg16(BX);
 		break;
 	case 2:
 	case 3:
@@ -50,7 +64,7 @@ u64 calc_modrm16(void)
 			addr += DISP16;
 		else
 		{
-			addr += GET_GPREG(BP);
+			addr += get_gpreg16(BP);
 			SEGMENT = SS;
 		}
 		break;
@@ -59,9 +73,9 @@ u64 calc_modrm16(void)
 	if (RM < 6)
 	{
 		if (RM % 2)
-			addr += GET_GPREG(DI);
+			addr += get_gpreg16(DI);
 		else
-			addr += GET_GPREG(SI);
+			addr += get_gpreg16(SI);
 	}
 
 	return addr;
@@ -94,10 +108,21 @@ u64 calc_modrm32(void)
 		}
 	default:
 		SEGMENT = (RM == 5) ? SS : DS;
-		addr += GET_GPREG((enum reg32)RM);
+		addr += get_gpreg32((enum reg32)RM);
 	}
 
 	return addr;
+}
+
+u64 calc_modrm(void)
+{
+	ASSERT(MOD != 3);
+
+	SEGMENT = DS;
+	if (is_mode32() ^ chsz_ad)
+		return calc_modrm32();
+	else
+		return calc_modrm16();
 }
 
 void set_rm8(u8 v)

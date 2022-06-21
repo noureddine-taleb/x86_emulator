@@ -7,6 +7,8 @@
 #include "init.h"
 #include "memory.h"
 #include "parser.h"
+#include "interrupt.h"
+#include "exec.h"
 
 int main(int argc, char **argv)
 {
@@ -28,11 +30,24 @@ int main(int argc, char **argv)
 
 	init_instructions();
 
-	while (1)
+	bool mode32;
+	u8 prefix;
+	bool chsz_op, chsz_ad;
+
+	while (true)
 	{
-		bool mode32;
-		u8 prefix;
-		bool chsz_op, chsz_ad;
+		if (chk_irq() && is_halt())
+		{
+			do_halt(false);
+		}
+
+		if (is_halt())
+		{
+			sleep(1);
+			continue;
+		}
+
+		hundle_interrupt();
 
 		mode32 = is_mode32();
 		prefix = parse_prefix();

@@ -57,7 +57,7 @@ u8 parse_prefix(void)
 		set_pre:
 			PREFIX = code;
 		next:
-			UPDATE_EIP(1);
+			update_eip(1);
 			break;
 		}
 	}
@@ -80,25 +80,25 @@ void parse(void)
 	{
 		IMM32 = get_code32(0);
 		DEBUG("imm32:0x%08x ", IMM32);
-		UPDATE_EIP(4);
+		update_eip(4);
 	}
 	else if (chk[opcode].imm16)
 	{
 		IMM16 = get_code16(0);
 		DEBUG("imm16:0x%04x ", IMM16);
-		UPDATE_EIP(2);
+		update_eip(2);
 	}
 	else if (chk[opcode].imm8)
 	{
 		IMM8 = (s8)get_code8(0);
 		DEBUG("imm8:0x%02x ", IMM8);
-		UPDATE_EIP(1);
+		update_eip(1);
 	}
 	if (chk[opcode].ptr16)
 	{
 		PTR16 = get_code16(0);
 		DEBUG("ptr16:0x%04x", PTR16);
-		UPDATE_EIP(2);
+		update_eip(2);
 	}
 
 	if (chk[opcode].moffs)
@@ -108,25 +108,25 @@ void parse(void)
 void parse_opcode(void)
 {
 	OPCODE = get_code8(0);
-	UPDATE_EIP(1);
+	update_eip(1);
 
 	// two byte opcode
 	if (OPCODE == 0x0f)
 	{
 		OPCODE = (OPCODE << 8) + get_code8(0);
-		UPDATE_EIP(1);
+		update_eip(1);
 	}
 
 	if (is_mode32())
-		DEBUG("CS:%04x EIP:0x%04x opcode:%02x ", get_segment(CS), GET_EIP() - 1, OPCODE);
+		DEBUG("CS:%04x EIP:0x%04x opcode:%02x ", get_segment(CS), get_eip() - 1, OPCODE);
 	else
-		DEBUG("CS:%04x  IP:0x%04x opcode:%02x ", get_segment(CS), GET_IP() - 1, OPCODE);
+		DEBUG("CS:%04x  IP:0x%04x opcode:%02x ", get_segment(CS), get_ip() - 1, OPCODE);
 }
 
 void parse_modrm_sib_disp(void)
 {
 	_MODRM = get_code8(0);
-	UPDATE_EIP(1);
+	update_eip(1);
 
 	DEBUG("[mod:0x%02x reg:0x%02x rm:0x%02x] ", MOD, REG, RM);
 
@@ -141,20 +141,20 @@ void parse_modrm32(void)
 	if (MOD != 3 && RM == 4)
 	{
 		_SIB = get_code8(0);
-		UPDATE_EIP(1);
+		update_eip(1);
 		DEBUG("[scale:0x%02x index:0x%02x base:0x%02x] ", SCALE, INDEX, BASE);
 	}
 
 	if (MOD == 2 || (MOD == 0 && RM == 5) || (MOD == 0 && BASE == 5))
 	{
 		DISP32 = get_code32(0);
-		UPDATE_EIP(4);
+		update_eip(4);
 		DEBUG("disp32:0x%08x ", DISP32);
 	}
 	else if (MOD == 1)
 	{
 		DISP8 = (s8)get_code8(0);
-		UPDATE_EIP(1);
+		update_eip(1);
 		DEBUG("disp8:0x%02x ", DISP8);
 	}
 }
@@ -164,13 +164,13 @@ void parse_modrm16(void)
 	if ((MOD == 0 && RM == 6) || MOD == 2)
 	{
 		DISP16 = get_code32(0);
-		UPDATE_EIP(2);
+		update_eip(2);
 		DEBUG("disp16:0x%04x ", DISP16);
 	}
 	else if (MOD == 1)
 	{
 		DISP8 = (s8)get_code8(0);
-		UPDATE_EIP(1);
+		update_eip(1);
 		DEBUG("disp8:0x%02x ", DISP8);
 	}
 }
@@ -180,12 +180,12 @@ void parse_moffs(void)
 	if (is_mode32() ^ chsz_ad)
 	{
 		MOFFS = get_code32(0);
-		UPDATE_EIP(4);
+		update_eip(4);
 	}
 	else
 	{
 		MOFFS = get_code16(0);
-		UPDATE_EIP(2);
+		update_eip(2);
 	}
 	DEBUG("moffs:0x%04x ", MOFFS);
 }

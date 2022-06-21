@@ -3,33 +3,33 @@
 
 #include "common.h"
 
-#define GET_EIP() get_eip()
-#define GET_IP() get_ip()
-#define SET_EIP(v) set_eip(v)
-#define SET_IP(v) set_ip(v)
-#define UPDATE_EIP(v) update_eip(v)
-#define UPDATE_IP(v) update_ip(v)
-#define GET_GPREG(reg) get_gpreg(reg)
-#define SET_GPREG(reg, v) set_gpreg(reg, v)
-#define UPDATE_GPREG(reg, v) update_gpreg(reg, v)
-#define EFLAGS_UPDATE_ADD(v1, v2) update_eflags_add(v1, v2)
-#define EFLAGS_UPDATE_OR(v1, v2) update_eflags_or(v1, v2)
-#define EFLAGS_UPDATE_AND(v1, v2) update_eflags_and(v1, v2)
-#define EFLAGS_UPDATE_SUB(v1, v2) update_eflags_sub(v1, v2)
-#define EFLAGS_UPDATE_MUL(v1, v2) update_eflags_mul(v1, v2)
-#define EFLAGS_UPDATE_IMUL(v1, v2) update_eflags_imul(v1, v2)
-#define EFLAGS_UPDATE_SHL(v1, v2) update_eflags_shl(v1, v2)
-#define EFLAGS_UPDATE_SHR(v1, v2) update_eflags_shr(v1, v2)
-#define EFLAGS_CF is_carry()
-#define EFLAGS_PF is_parity()
-#define EFLAGS_ZF is_zero()
-#define EFLAGS_SF is_sign()
-#define EFLAGS_OF is_overflow()
-#define EFLAGS_DF is_direction()
-#define PUSH32(v) push32(v)
-#define PUSH16(v) push16(v)
-#define POP32() pop32()
-#define POP16() pop16()
+//#define get_eip() get_eip()
+//#define GET_IP() get_ip()
+//#define SET_EIP(v) set_eip(v)
+//#define SET_IP(v) set_ip(v)
+// #define update_eip(v) update_eip(v)
+//#define UPDATE_IP(v) update_ip(v)
+//#define GET_GPREG(reg) get_gpreg(reg)
+//#define SET_GPREG(reg, v) set_gpreg(reg, v)
+//#define UPDATE_GPREG(reg, v) update_gpreg(reg, v)
+//#define EFLAGS_UPDATE_ADD(v1, v2) update_eflags_add(v1, v2)
+//#define EFLAGS_UPDATE_OR(v1, v2) update_eflags_or(v1, v2)
+//#define EFLAGS_UPDATE_AND(v1, v2) update_eflags_and(v1, v2)
+//#define EFLAGS_UPDATE_SUB(v1, v2) update_eflags_sub(v1, v2)
+//#define EFLAGS_UPDATE_MUL(v1, v2) update_eflags_mul(v1, v2)
+//#define EFLAGS_UPDATE_IMUL(v1, v2) update_eflags_imul(v1, v2)
+//#define EFLAGS_UPDATE_SHL(v1, v2) update_eflags_shl(v1, v2)
+//#define EFLAGS_UPDATE_SHR(v1, v2) update_eflags_shr(v1, v2)
+//#define EFLAGS_CF is_carry()
+//#define EFLAGS_PF is_parity()
+//#define EFLAGS_ZF is_zero()
+//#define EFLAGS_SF is_sign()
+//#define EFLAGS_OF is_overflow()
+//#define EFLAGS_DF is_direction()
+//#define PUSH32(v) push32(v)
+//#define PUSH16(v) push16(v)
+//#define POP32() pop32()
+//#define POP16() pop16()
 
 enum reg32
 {
@@ -182,7 +182,36 @@ struct x86_cpu
 	struct sg_register sgregs[SGREGS_COUNT];
 	struct dt_register dtregs[DTREGS_COUNT];
 
-	bool halt;
+	union
+	{
+		u32 reg32;
+		u16 reg16;
+
+		struct
+		{
+			u32 CF : 1;
+			u32 : 1; // 1
+			u32 PF : 1;
+			u32 : 1; // 0
+			u32 AF : 1;
+			u32 : 1; // 0
+			u32 ZF : 1;
+			u32 SF : 1;
+			u32 TF : 1;
+			u32 IF : 1;
+			u32 DF : 1;
+			u32 OF : 1;
+			u32 IOPL : 2;
+			u32 NT : 1;
+			u32 : 1; // 0
+			u32 RF : 1;
+			u32 VM : 1;
+			u32 AC : 1;
+			u32 VIF : 1;
+			u32 VIP : 1;
+			u32 ID : 1;
+		};
+	} eflags;
 
 	union
 	{
@@ -248,6 +277,8 @@ struct x86_cpu
 			u32 : 21;
 		};
 	} cr4;
+
+	bool __halt;
 };
 
 u32 get_eip(void);
@@ -278,6 +309,15 @@ bool is_protected(void);
 bool is_ena_paging(void);
 u32 get_pdir_base(void);
 u16 get_segment(enum sgreg reg);
+void set_segment(enum sgreg reg, u16 sel);
+void do_halt(bool h);
+bool is_halt(void);
+bool is_interrupt_enabled(void);
+u32 get_eflags(void);
+void set_eflags(u32 v);
+u16 get_flags(void);
+void set_flags(u16 v);
+void set_interrupt(bool interrupt);
 
 extern struct x86_cpu cpu;
 

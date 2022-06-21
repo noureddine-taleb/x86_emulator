@@ -1,6 +1,9 @@
 #ifndef _INSTRUCTION_H
 #define _INSTRUCTION_H
 
+#include "common.h"
+#include "cpu.h"
+
 #define PREFIX (inst.prefix)
 #define OPCODE (inst.opcode)
 #define _MODRM (inst._modrm)
@@ -90,6 +93,11 @@ struct x86_instruction
 	s16 ptr16;
 	u32 moffs;
 };
+
+u8 get_r8(void);
+u64 calc_modrm(void);
+void set_rm8(u8 v);
+enum sgreg select_segment(void);
 
 extern struct x86_instruction inst;
 

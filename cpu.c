@@ -1,5 +1,8 @@
 #include "common.h"
 #include "cpu.h"
+#include "exception.h"
+#include "descriptor.h"
+#include "memory.h"
 
 struct x86_cpu cpu;
 
@@ -127,16 +130,6 @@ u8 update_gpreg8(enum reg8 n, s8 v)
 				  : (cpu.gpregs[n - AH].reg8_h += v);
 }
 
-bool is_halt(void)
-{
-	return cpu.halt;
-}
-
-void do_halt(bool h)
-{
-	cpu.halt = h;
-}
-
 bool is_mode32(void)
 {
 	return cpu.sgregs[CS].cache.flags.DB;
@@ -163,4 +156,85 @@ u16 get_segment(enum sgreg reg)
 
 	get_sgreg(reg, &sg);
 	return sg.raw;
+}
+
+void set_segment(enum sgreg reg, u16 sel)
+{
+	struct sg_register sg;
+	struct sg_register_cache *cache = &sg.cache;
+
+	get_sgreg(reg, &sg);
+	sg.raw = sel;
+
+	if (is_protected())
+	{
+		u32 dt_base;
+		u16 dt_limit, dt_index;
+		struct seg_desc gdt;
+		const char *sgreg_name[] = {"ES", "CS", "SS", "DS", "FS", "GS"};
+
+		dt_index = sg.index << 3;
+
+		dt_base = get_dtreg_base(sg.TI ? LDTR : GDTR);
+		dt_limit = get_dtreg_limit(sg.TI ? LDTR : GDTR);
+
+		EXCEPTION(EXP_GP, (reg == CS || reg == SS) && !dt_index);
+		EXCEPTION(EXP_GP, dt_index > dt_limit);
+
+		__read_data(&gdt, dt_base + dt_index, sizeof(struct seg_desc));
+
+		cache->base = (gdt.base_h << 24) + (gdt.base_m << 16) + gdt.base_l;
+		cache->limit = (gdt.limit_h << 16) + gdt.limit_l;
+
+		*(u8 *)&cache->flags.type = *(u8 *)&gdt.type;
+		cache->flags.AVL = gdt.AVL;
+		cache->flags.DB = gdt.DB;
+		cache->flags.G = gdt.G;
+
+		DEBUG("%s : dt_base=0x%04x, dt_limit=0x%02x, dt_index=0x%02x {base=0x%08x, limit=0x%08x, flags=0x%04x}", sgreg_name[reg], dt_base, dt_limit, dt_index, cache->base, cache->limit << (cache->flags.G ? 12 : 0), cache->flags.raw);
+	}
+	else
+		cache->base = (u32)sel << 4;
+
+	set_sgreg(reg, &sg);
+}
+
+void do_halt(bool h)
+{
+	cpu.__halt = h;
+};
+
+bool is_halt(void)
+{
+	return cpu.__halt;
+}
+
+bool is_interrupt_enabled(void)
+{
+	return cpu.eflags.IF;
+}
+
+u32 get_eflags(void)
+{
+	return cpu.eflags.reg32;
+}
+
+void set_eflags(u32 v)
+{
+	cpu.eflags.reg32 = v;
+}
+
+u16 get_flags(void)
+{
+	return cpu.eflags.reg16;
+}
+
+void set_flags(u16 v)
+{
+	cpu.eflags.reg16 = v;
+}
+
+void set_interrupt(bool interrupt)
+{
+	cpu.eflags.IF = interrupt;
 }
